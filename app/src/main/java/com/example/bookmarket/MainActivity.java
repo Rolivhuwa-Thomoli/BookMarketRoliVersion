@@ -56,6 +56,22 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddTextbookActivity.class);
             startActivity(intent);
         });
+        AppDatabase db = AppDatabase.getInstance(this);
+        TextbookDao textbookDao = db.textbookDao();
+        // Insert a textbook
+        new Thread(() -> {
+            Textbook textbook = new Textbook("New Book", "Author", "R100", "Seller", 10);
+            textbookDao.insert(textbook);
+        }).start();
+
+        // Retrieve all textbooks
+        new Thread(() -> {
+            List<Textbook> textbooks = textbookDao.getAllTextbooks();
+            runOnUiThread(() -> {
+                // Update RecyclerView with textbooks
+                adapter.setTextbooks(textbooks);
+            });
+        }).start();
     }
 
     private void searchBooks(String query) {
