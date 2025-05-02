@@ -1,6 +1,7 @@
 package com.example.bookmarket;
 
 import android.os.Bundle;
+import android.content.Intent;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +29,11 @@ public class BuyerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_buyer);
+        Button btnHome = findViewById(R.id.btnHome);
+        btnHome.setOnClickListener(v -> {
+            startActivity(new Intent(BuyerActivity.this, SelectorActivity.class));
+            finish(); // Close current activity
+        });
 
         // Initialize database
         db = DatabaseInstance.getInstance(this);

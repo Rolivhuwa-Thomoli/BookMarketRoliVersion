@@ -29,6 +29,11 @@ public class MainActivity extends AppCompatActivity implements TextbookAdapter.O
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Button btnHome = findViewById(R.id.btnHome);
+        btnHome.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, SelectorActivity.class));
+            finish(); // Close current activity
+        });
 
         // Initialize database
         db = DatabaseInstance.getInstance(this);
