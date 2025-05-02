@@ -5,9 +5,10 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,7 +19,7 @@ import com.example.bookmarket.Data.TextbookEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements TextbookAdapter.OnDeleteClickListener {
 
     private TextbookAdapter adapter;
     private final List<TextbookEntity> filteredList = new ArrayList<>();
@@ -40,7 +41,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new TextbookAdapter(filteredList);
+        adapter = new TextbookAdapter(filteredList, this);
         recyclerView.setAdapter(adapter);
 
         // Observe textbooks from database
@@ -74,6 +75,25 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddTextbookActivity.class);
             startActivity(intent);
         });
+    }
+
+    @Override
+    public void onDeleteClick(TextbookEntity textbook) {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete Textbook")
+                .setMessage("Are you sure you want to delete " + textbook.title + "?")
+                .setPositiveButton("Delete", (dialog, which) -> deleteTextbook(textbook))
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void deleteTextbook(TextbookEntity textbook) {
+        new Thread(() -> {
+            db.textbookDao().delete(textbook);
+            runOnUiThread(() ->
+                    Toast.makeText(this, "Textbook deleted", Toast.LENGTH_SHORT).show()
+            );
+        }).start();
     }
 
     private void searchBooks(String query) {

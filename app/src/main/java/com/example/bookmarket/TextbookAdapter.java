@@ -3,6 +3,7 @@ package com.example.bookmarket;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,9 +15,15 @@ import java.util.List;
 public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.TextbookViewHolder> {
 
     private final List<TextbookEntity> textbookList;
+    private final OnDeleteClickListener deleteListener;
 
-    public TextbookAdapter(List<TextbookEntity> textbookList) {
+    public interface OnDeleteClickListener {
+        void onDeleteClick(TextbookEntity textbook);
+    }
+
+    public TextbookAdapter(List<TextbookEntity> textbookList, OnDeleteClickListener deleteListener) {
         this.textbookList = textbookList;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -28,14 +35,19 @@ public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.Textbo
 
     @Override
     public void onBindViewHolder(@NonNull TextbookViewHolder holder, int position) {
-        // Bind the data to the ViewHolder
         TextbookEntity textbook = textbookList.get(position);
         holder.titleTextView.setText("Title: " + textbook.title);
         holder.authorTextView.setText("Author: " + textbook.author);
-        holder.priceTextView.setText("Price: R" + textbook.price); // Added "R" for currency
+        holder.priceTextView.setText("Price: R" + textbook.price);
         holder.sellerTextView.setText("Seller: " + textbook.seller);
         holder.copiesTextView.setText("Copies: " + textbook.copies);
         holder.bankingInfoTextView.setText("Bank Info: " + textbook.bankInfo);
+
+        holder.deleteButton.setOnClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onDeleteClick(textbook);
+            }
+        });
     }
 
     @Override
@@ -46,16 +58,17 @@ public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.Textbo
     static class TextbookViewHolder extends RecyclerView.ViewHolder {
         TextView titleTextView, authorTextView, priceTextView,
                 sellerTextView, copiesTextView, bankingInfoTextView;
+        Button deleteButton;
 
         public TextbookViewHolder(@NonNull View itemView) {
             super(itemView);
-            // Initialize all TextViews
             titleTextView = itemView.findViewById(R.id.titleTextView);
             authorTextView = itemView.findViewById(R.id.authorTextView);
             priceTextView = itemView.findViewById(R.id.priceTextView);
             sellerTextView = itemView.findViewById(R.id.sellerTextView);
             copiesTextView = itemView.findViewById(R.id.copiesTextView);
             bankingInfoTextView = itemView.findViewById(R.id.bankingInfoTextView);
+            deleteButton = itemView.findViewById(R.id.deleteButton);
         }
     }
 }
