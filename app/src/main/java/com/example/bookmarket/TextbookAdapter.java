@@ -43,11 +43,13 @@ public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.Textbo
         holder.copiesTextView.setText("Copies: " + textbook.copies);
         holder.bankingInfoTextView.setText("Bank Info: " + textbook.bankInfo);
 
-        holder.deleteButton.setOnClickListener(v -> {
-            if (deleteListener != null) {
-                deleteListener.onDeleteClick(textbook);
-            }
-        });
+        // Handle delete button visibility and click
+        if (deleteListener != null) {
+            holder.deleteButton.setVisibility(View.VISIBLE);
+            holder.deleteButton.setOnClickListener(v -> deleteListener.onDeleteClick(textbook));
+        } else {
+            holder.deleteButton.setVisibility(View.GONE);
+        }
     }
 
     @Override

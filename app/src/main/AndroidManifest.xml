@@ -12,17 +12,31 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BookMarket"
         tools:targetApi="31">
+
+        <!-- Only SelectorActivity should have the MAIN/LAUNCHER intent filter -->
         <activity
-            android:name=".MainActivity"
+            android:name=".SelectorActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <activity android:name=".AddTextbookActivity" />
+        <!-- Remove MAIN/LAUNCHER from MainActivity -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+
+        <activity
+            android:name=".BuyerActivity"
+            android:label="Buy Textbooks"
+            android:exported="true" />
+
+        <activity
+            android:name=".AddTextbookActivity"
+            android:exported="false" /> <!-- Not accessible directly from outside -->
+
     </application>
 
 </manifest>
