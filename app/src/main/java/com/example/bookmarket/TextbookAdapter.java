@@ -7,13 +7,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.bookmarket.Data.TextbookEntity;
+
 import java.util.List;
 
 public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.TextbookViewHolder> {
 
-    private final List<Textbook> textbookList;
+    private final List<TextbookEntity> textbookList;
 
-    public TextbookAdapter(List<Textbook> textbookList) {
+    public TextbookAdapter(List<TextbookEntity> textbookList) {
         this.textbookList = textbookList;
     }
 
@@ -27,13 +29,13 @@ public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.Textbo
     @Override
     public void onBindViewHolder(@NonNull TextbookViewHolder holder, int position) {
         // Bind the data to the ViewHolder
-        Textbook textbook = textbookList.get(position);
-        holder.titleTextView.setText("Title: " + textbook.getTitle());
-        holder.authorTextView.setText("Author: " + textbook.getAuthor());
-        holder.priceTextView.setText("Price: " + textbook.getPrice());
-        holder.sellerTextView.setText("Seller: " + textbook.getSellerName());
-        holder.copiesTextView.setText("Copies: " + textbook.getNumberOfCopies());
-        holder.bankingInfoTextView.setText("Banking Info: " + textbook.getBankingInfo()); // New
+        TextbookEntity textbook = textbookList.get(position);
+        holder.titleTextView.setText("Title: " + textbook.title);
+        holder.authorTextView.setText("Author: " + textbook.author);
+        holder.priceTextView.setText("Price: R" + textbook.price); // Added "R" for currency
+        holder.sellerTextView.setText("Seller: " + textbook.seller);
+        holder.copiesTextView.setText("Copies: " + textbook.copies);
+        holder.bankingInfoTextView.setText("Bank Info: " + textbook.bankInfo);
     }
 
     @Override
@@ -42,7 +44,8 @@ public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.Textbo
     }
 
     static class TextbookViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView, authorTextView, priceTextView, sellerTextView, copiesTextView, bankingInfoTextView;
+        TextView titleTextView, authorTextView, priceTextView,
+                sellerTextView, copiesTextView, bankingInfoTextView;
 
         public TextbookViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -52,7 +55,7 @@ public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.Textbo
             priceTextView = itemView.findViewById(R.id.priceTextView);
             sellerTextView = itemView.findViewById(R.id.sellerTextView);
             copiesTextView = itemView.findViewById(R.id.copiesTextView);
-            bankingInfoTextView = itemView.findViewById(R.id.bankingInfoTextView); // New
+            bankingInfoTextView = itemView.findViewById(R.id.bankingInfoTextView);
         }
     }
 }

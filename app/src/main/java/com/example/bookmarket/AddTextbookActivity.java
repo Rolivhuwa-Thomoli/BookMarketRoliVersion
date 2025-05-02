@@ -10,15 +10,23 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.bookmarket.Data.AppDatabase;
+import com.example.bookmarket.Data.DatabaseInstance;
+import com.example.bookmarket.Data.TextbookEntity;
+
 public class AddTextbookActivity extends AppCompatActivity {
 
     private EditText titleEditText, authorEditText, priceEditText, sellerEditText, copiesEditText, bankingInfoEditText;
     private Button submitButton;
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_textbook);
+
+        // Initialize database
+        db = DatabaseInstance.getInstance(this);
 
         // Initialize Views
         titleEditText = findViewById(R.id.titleEditText);
@@ -26,66 +34,79 @@ public class AddTextbookActivity extends AppCompatActivity {
         priceEditText = findViewById(R.id.priceEditText);
         sellerEditText = findViewById(R.id.sellerEditText);
         copiesEditText = findViewById(R.id.copiesEditText);
-        bankingInfoEditText = findViewById(R.id.bankingInfoEditText); // New field for banking information
+        bankingInfoEditText = findViewById(R.id.bankingInfoEditText);
         submitButton = findViewById(R.id.submitButton);
 
         // Handle Submit Button Click
         submitButton.setOnClickListener(view -> {
             String title = titleEditText.getText().toString().trim();
             String author = authorEditText.getText().toString().trim();
-            String price = priceEditText.getText().toString().trim();
+            String priceStr = priceEditText.getText().toString().trim();
             String sellerName = sellerEditText.getText().toString().trim();
             String copiesString = copiesEditText.getText().toString().trim();
-            String bankingInfo = bankingInfoEditText.getText().toString().trim(); // Get banking information
+            String bankingInfo = bankingInfoEditText.getText().toString().trim();
 
             // Validate Input
-            if (TextUtils.isEmpty(title) || TextUtils.isEmpty(author) || TextUtils.isEmpty(price) ||
+            if (TextUtils.isEmpty(title) || TextUtils.isEmpty(author) || TextUtils.isEmpty(priceStr) ||
                     TextUtils.isEmpty(sellerName) || TextUtils.isEmpty(copiesString) || TextUtils.isEmpty(bankingInfo)) {
                 Toast.makeText(AddTextbookActivity.this, "All fields are required", Toast.LENGTH_SHORT).show();
                 return;
             }
 
+            double price;
             int numberOfCopies;
             try {
+                price = Double.parseDouble(priceStr);
                 numberOfCopies = Integer.parseInt(copiesString);
             } catch (NumberFormatException e) {
-                Toast.makeText(AddTextbookActivity.this, "Number of copies must be a valid number", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddTextbookActivity.this, "Price and copies must be valid numbers", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // Create a new Textbook object
-            Textbook newTextbook = new Textbook(title, author, price, sellerName, numberOfCopies, bankingInfo);
+            // Create a new TextbookEntity object
+            TextbookEntity newTextbook = new TextbookEntity();
+            newTextbook.title = title;
+            newTextbook.author = author;
+            newTextbook.price = price;
+            newTextbook.seller = sellerName;
+            newTextbook.copies = numberOfCopies;
+            newTextbook.bankInfo = bankingInfo;
 
-            // Check for duplicates
-            if (MainActivity.textbookList.contains(newTextbook)) {
-                Toast.makeText(AddTextbookActivity.this, "This textbook already exists!", Toast.LENGTH_SHORT).show();
-                return;
-            }
+            // Insert into database using a background thread
+            new Thread(() -> {
+                try {
+                    // Check for duplicates (optional)
+                    // You might want to implement this in your DAO with a @Query
 
-            // Add the textbook to the list
-            MainActivity.textbookList.add(newTextbook);
+                    // Insert the textbook
+                    db.textbookDao().insert(newTextbook);
 
-            // Show confirmation dialog
-            new AlertDialog.Builder(AddTextbookActivity.this)
-                    .setTitle("Success")
-                    .setMessage("The textbook has been added successfully!")
-                    .setPositiveButton("Go to List", (dialog, which) -> {
-                        // Navigate to MainActivity
-                        Intent intent = new Intent(AddTextbookActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish(); // Close AddTextbookActivity
-                    })
-                    .setNegativeButton("Add Another Book", (dialog, which) -> {
-                        // Clear the input fields for new entry
-                        titleEditText.setText("");
-                        authorEditText.setText("");
-                        priceEditText.setText("");
-                        sellerEditText.setText("");
-                        copiesEditText.setText("");
-                        bankingInfoEditText.setText("");
-                    })
-                    .setCancelable(false) // Prevent dismissing by tapping outside
-                    .show();
+                    // Show success on UI thread
+                    runOnUiThread(() -> {
+                        new AlertDialog.Builder(AddTextbookActivity.this)
+                                .setTitle("Success")
+                                .setMessage("The textbook has been added successfully!")
+                                .setPositiveButton("Go to List", (dialog, which) -> {
+                                    Intent intent = new Intent(AddTextbookActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .setNegativeButton("Add Another Book", (dialog, which) -> {
+                                    titleEditText.setText("");
+                                    authorEditText.setText("");
+                                    priceEditText.setText("");
+                                    sellerEditText.setText("");
+                                    copiesEditText.setText("");
+                                    bankingInfoEditText.setText("");
+                                })
+                                .setCancelable(false)
+                                .show();
+                    });
+                } catch (Exception e) {
+                    runOnUiThread(() ->
+                            Toast.makeText(AddTextbookActivity.this, "Error saving textbook: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                }
+            }).start();
         });
     }
 }

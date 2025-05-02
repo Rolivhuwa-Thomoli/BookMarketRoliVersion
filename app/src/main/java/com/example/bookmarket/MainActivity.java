@@ -5,53 +5,71 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.bookmarket.Data.AppDatabase;
+import com.example.bookmarket.Data.DatabaseInstance;
+import com.example.bookmarket.Data.TextbookEntity;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static List<Textbook> textbookList = new ArrayList<>();
     private TextbookAdapter adapter;
-    private List<Textbook> filteredList = new ArrayList<>(); // To store search results
+    private final List<TextbookEntity> filteredList = new ArrayList<>();
+    private AppDatabase db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Initialize database
+        db = DatabaseInstance.getInstance(this);
+
         // Initialize Views
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         EditText searchEditText = findViewById(R.id.searchEditText);
         Button searchButton = findViewById(R.id.searchButton);
-        Button addTextbookButton = findViewById(R.id.addTextbookButton); // Initialize "List Button"
+        Button addTextbookButton = findViewById(R.id.addTextbookButton);
 
         // Set up RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TextbookAdapter(filteredList);
         recyclerView.setAdapter(adapter);
 
-        // Load sample data
-        loadSampleData();
-        filteredList.addAll(textbookList); // Show all books initially
-        adapter.notifyDataSetChanged();
+        // Observe textbooks from database
+        db.textbookDao().getAllTextbooksLiveData().observe(this, textbooks -> {
+            filteredList.clear();
+            if (textbooks != null) {
+                filteredList.addAll(textbooks);
+            }
+            adapter.notifyDataSetChanged();
+        });
 
         // Handle Search Button Click
         searchButton.setOnClickListener(view -> {
             String query = searchEditText.getText().toString().trim();
             if (TextUtils.isEmpty(query)) {
-                filteredList.clear();
-                filteredList.addAll(textbookList); // Show all books if no search query
+                // Refresh with all books
+                db.textbookDao().getAllTextbooksLiveData().observe(this, textbooks -> {
+                    filteredList.clear();
+                    if (textbooks != null) {
+                        filteredList.addAll(textbooks);
+                    }
+                    adapter.notifyDataSetChanged();
+                });
             } else {
                 searchBooks(query);
             }
-            adapter.notifyDataSetChanged();
         });
 
-        // Handle "List Button" Click
+        // Handle "Add Textbook" Button Click
         addTextbookButton.setOnClickListener(view -> {
             Intent intent = new Intent(MainActivity.this, AddTextbookActivity.class);
             startActivity(intent);
@@ -59,18 +77,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void searchBooks(String query) {
-        filteredList.clear();
-        for (Textbook textbook : textbookList) {
-            if (textbook.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                    textbook.getSellerName().toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(textbook);
-            }
-        }
-    }
-
-    private void loadSampleData() {
-        textbookList.add(new Textbook("Introduction to Algorithms", "Thomas H. Cormen", "R50", "Alice", 5, "123456789"));
-        textbookList.add(new Textbook("Clean Code", "Robert C. Martin", "R40", "Bob", 3, "987654321"));
-        textbookList.add(new Textbook("Artificial Intelligence: A Modern Approach", "Stuart Russell", "R60", "Charlie", 2, "456789123"));
+        new Thread(() -> {
+            List<TextbookEntity> searchResults = db.textbookDao().searchTextbooks("%" + query + "%");
+            runOnUiThread(() -> {
+                filteredList.clear();
+                filteredList.addAll(searchResults);
+                adapter.notifyDataSetChanged();
+            });
+        }).start();
     }
 }
