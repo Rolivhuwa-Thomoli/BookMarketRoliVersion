@@ -1,56 +1,72 @@
 package com.example.bookmarket;
 
 import java.util.Objects;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
-@Entity(tableName = "textbooks")
 public class Textbook {
-
-    @PrimaryKey(autoGenerate = true)
-    private int id;
 
     private String title;
     private String author;
     private String price;
     private String sellerName;
     private int numberOfCopies;
-    // New field for the number of copies
+    private String bankingInfo; // New field for banking information
 
-    public Textbook(String title, String author, String price, String sellerName, int numberOfCopies) {
+    public Textbook(String title, String author, String price, String sellerName, int numberOfCopies, String bankingInfo) {
         this.title = title;
         this.author = author;
         this.price = price;
         this.sellerName = sellerName;
         this.numberOfCopies = numberOfCopies;
+        this.bankingInfo = bankingInfo; // Initialize banking information
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
+    // Getters and Setters
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getAuthor() {
         return author;
     }
 
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+
     public String getPrice() {
         return price;
+    }
+
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public String getSellerName() {
         return sellerName;
     }
 
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
     public int getNumberOfCopies() {
         return numberOfCopies;
+    }
+
+    public void setNumberOfCopies(int numberOfCopies) {
+        this.numberOfCopies = numberOfCopies;
+    }
+
+    public String getBankingInfo() {
+        return bankingInfo;
+    }
+
+    public void setBankingInfo(String bankingInfo) {
+        this.bankingInfo = bankingInfo;
     }
 
     // Override equals and hashCode to prevent duplicates based on title and author

@@ -49,6 +49,14 @@
             android:hint="Enter number of copies"
             android:inputType="number" />
 
+        <!-- Banking Information -->
+        <EditText
+            android:id="@+id/bankingInfoEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter banking information"
+            android:inputType="text" />
+
         <!-- Submit Button -->
         <Button
             android:id="@+id/submitButton"

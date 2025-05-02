@@ -56,22 +56,6 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddTextbookActivity.class);
             startActivity(intent);
         });
-        AppDatabase db = AppDatabase.getInstance(this);
-        TextbookDao textbookDao = db.textbookDao();
-        // Insert a textbook
-        new Thread(() -> {
-            Textbook textbook = new Textbook("New Book", "Author", "R100", "Seller", 10);
-            textbookDao.insert(textbook);
-        }).start();
-
-        // Retrieve all textbooks
-        new Thread(() -> {
-            List<Textbook> textbooks = textbookDao.getAllTextbooks();
-            runOnUiThread(() -> {
-                // Update RecyclerView with textbooks
-                adapter.setTextbooks(textbooks);
-            });
-        }).start();
     }
 
     private void searchBooks(String query) {
@@ -85,8 +69,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loadSampleData() {
-        textbookList.add(new Textbook("Introduction to Algorithms", "Thomas H. Cormen", "R50", "Alice", 5));
-        textbookList.add(new Textbook("Clean Code", "Robert C. Martin", "R40", "Bob", 3));
-        textbookList.add(new Textbook("Artificial Intelligence: A Modern Approach", "Stuart Russell", "R60", "Charlie", 2));
+        textbookList.add(new Textbook("Introduction to Algorithms", "Thomas H. Cormen", "R50", "Alice", 5, "123456789"));
+        textbookList.add(new Textbook("Clean Code", "Robert C. Martin", "R40", "Bob", 3, "987654321"));
+        textbookList.add(new Textbook("Artificial Intelligence: A Modern Approach", "Stuart Russell", "R60", "Charlie", 2, "456789123"));
     }
 }
