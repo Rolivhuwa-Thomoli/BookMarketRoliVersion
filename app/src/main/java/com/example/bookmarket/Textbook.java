@@ -9,7 +9,7 @@ public class Textbook {
     private String price;
     private String sellerName;
     private int numberOfCopies;
-    private String bankingInfo; // New field for banking information
+    private String bankingInfo;
 
     public Textbook(String title, String author, String price, String sellerName, int numberOfCopies, String bankingInfo) {
         this.title = title;
@@ -17,7 +17,7 @@ public class Textbook {
         this.price = price;
         this.sellerName = sellerName;
         this.numberOfCopies = numberOfCopies;
-        this.bankingInfo = bankingInfo; // Initialize banking information
+        this.bankingInfo = bankingInfo;
     }
 
     // Getters and Setters

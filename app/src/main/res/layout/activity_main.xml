@@ -29,10 +29,6 @@
             android:text="Search" />
     </LinearLayout>
 
-    <!-- Home Button -->
-
-    <!-- RecyclerView -->
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -41,7 +37,7 @@
         android:layout_weight="1"
         android:layout_marginTop="16dp" />
 
-    <!-- Add Book Button -->
+    <!-- Add new Book Button -->
     <Button
         android:id="@+id/addTextbookButton"
         android:layout_width="match_parent"

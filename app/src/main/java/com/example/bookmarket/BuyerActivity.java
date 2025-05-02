@@ -43,7 +43,6 @@ public class BuyerActivity extends AppCompatActivity {
         EditText searchEditText = findViewById(R.id.searchEditText);
         Button searchButton = findViewById(R.id.searchButton);
 
-        // Set up RecyclerView with a simplified adapter (no delete functionality)
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new TextbookAdapter(filteredList, null); // Pass null for deleteListener
         recyclerView.setAdapter(adapter);

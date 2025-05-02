@@ -74,9 +74,7 @@ public class AddTextbookActivity extends AppCompatActivity {
 
             // Insert into database using a background thread
             new Thread(() -> {
-                try {
-                    // Check for duplicates (optional)
-                    // You might want to implement this in your DAO with a @Query
+                try {//Exception handling
 
                     // Insert the textbook
                     db.textbookDao().insert(newTextbook);
